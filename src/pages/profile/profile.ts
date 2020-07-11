@@ -46,4 +46,8 @@ export class ProfilePage {
       },
         error => {});
   }
+
+  showDetail(cliente_id: string){
+    this.navCtrl.push('ClientDetailPage', {cliente_id: cliente_id});
+  }
 }
