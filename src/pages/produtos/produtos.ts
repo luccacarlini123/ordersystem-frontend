@@ -15,12 +15,16 @@ export class ProdutosPage {
 
   constructor(
     public navCtrl: NavController,
-    public navParams: NavParams, 
+    public navParams: NavParams,
     public produtoService: ProdutoService,
     public loadingCtrl: LoadingController) {
   }
 
   ionViewDidLoad() {
+    this.loadData();
+  }
+
+  loadData() {
     let categoria_id = this.navParams.get('categoria_id');
     let loader = this.presentLoading();
     this.produtoService.findByCategorias(categoria_id)
@@ -28,20 +32,20 @@ export class ProdutosPage {
         this.items = response['content'];
         loader.dismiss();
         this.loadImageUrls();
-      }, 
-      error => {
-        loader.dismiss();
-      });
+      },
+        error => {
+          loader.dismiss();
+        });
   }
 
-  loadImageUrls(){
-    for(var i=0;i<this.items.length;i++){
+  loadImageUrls() {
+    for (var i = 0; i < this.items.length; i++) {
       let item = this.items[i];
       this.produtoService.getSmallImageFromBucket(item.id)
         .subscribe(response => {
           item.imageUrl = `${API_CONFIG.bucketBaseUrl}/prod${item.id}-small.jpg`;
         },
-        error => {});
+          error => { });
     }
   }
 
@@ -53,7 +57,14 @@ export class ProdutosPage {
     return loader;
   }
 
-  showDetail(produto_id: string){
-    this.navCtrl.push('ProdutoDetailPage', {produto_id: produto_id});
+  doRefresh(refresher) {
+    this.loadData();
+    setTimeout(() => {
+      refresher.complete();
+    }, 1000);
+  }
+
+  showDetail(produto_id: string) {
+    this.navCtrl.push('ProdutoDetailPage', { produto_id: produto_id });
   }
 }
