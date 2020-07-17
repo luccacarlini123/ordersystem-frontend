@@ -26,6 +26,10 @@ export class ProfilePage {
   }
 
   ionViewDidLoad() {
+    this.loadData();
+  }
+
+  loadData() {
     let localUser = this.storage.getLocalUser();
     if (localUser && localUser.email) {
       this.clienteService.findByEmail(localUser.email)
@@ -38,7 +42,8 @@ export class ProfilePage {
               this.navCtrl.setRoot('HomePage');
             }
           });
-    } else {
+    }
+    else {
       this.navCtrl.setRoot('HomePage');
     }
   }
@@ -48,11 +53,11 @@ export class ProfilePage {
       .subscribe(response => {
         this.cliente.imageUrl = `${API_CONFIG.bucketBaseUrl}/cp${this.cliente.id}.jpg`;
       },
-        error => {});
+        error => { });
   }
 
-  showDetail(cliente_id: string){
-    this.navCtrl.push('ClientDetailPage', {cliente_id: cliente_id});
+  showDetail(cliente_id: string) {
+    this.navCtrl.push('ClientDetailPage', { cliente_id: cliente_id });
   }
 
   getCameraPicture() {
@@ -67,10 +72,24 @@ export class ProfilePage {
     }
 
     this.camera.getPicture(options).then((imageData) => {
-     this.picture = 'data:image/png;base64,' + imageData;
-     this.cameraOn = false;
+      this.picture = 'data:image/png;base64,' + imageData;
+      this.cameraOn = false;
     }, (err) => {
     });
+  }
+
+  sendPicture() {
+    this.clienteService.uploadPicture(this.picture)
+      .subscribe(response => {
+        this.picture = null;
+        this.loadData();
+      },
+      error => {
+      });
+  }
+
+  cancel() {
+    this.picture = null;
   }
 
 }
